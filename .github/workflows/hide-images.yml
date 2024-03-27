@@ -25,6 +25,9 @@ jobs:
           git config --global user.email "${{ github.event.pull_request.user.email }}"
           git config --global user.name "${{ github.event.pull_request.user.login }}"
 
+      - name: Check Git Status
+        run: |
+          git status
 
       # Commit changes with appropriate message
       - name: Commit changes
