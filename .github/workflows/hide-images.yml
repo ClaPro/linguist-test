@@ -17,7 +17,6 @@ jobs:
       - name: Exclude PNG files from code review
         run: |
           find ./node_modules -name '*.png' -exec git rm --cached {} +
-          
 
       # Configure Git user
       - name: Set Git user
@@ -25,14 +24,14 @@ jobs:
           git config --global user.email "${{ github.event.pull_request.user.email }}"
           git config --global user.name "${{ github.event.pull_request.user.login }}"
 
-      - name: Check Git Status
+      # Explicitly stage changes
+      - name: Stage changes
         run: |
-          git status
+          git add -u
 
       # Commit changes with appropriate message
       - name: Commit changes
         run: |
-          git add .
           git commit -m "Exclude PNG files from code review" || echo "No changes to commit"
 
       # Push changes back to the pull request branch
