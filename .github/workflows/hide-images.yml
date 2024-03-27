@@ -11,16 +11,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.head_ref }} # Check out the branch specified by github.head_ref
+          ref: ${{ github.event.pull_request.head.sha }} # Checkout the head SHA of the pull request
 
       - name: Exclude images from diff
         run: |
           git config user.name "GitHub Actions"
           git config user.email "<>"
-          git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E '\.png$|\.jpg$|\.jpeg$|\.gif$' | xargs -I{} git reset HEAD {}
+          BEFORE_SHA=$(git merge-base ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }}) # Get the base commit SHA of the pull request
+          git diff --name-only $BEFORE_SHA ${{ github.event.pull_request.head.sha }} | grep -E '\.png$|\.jpg$|\.jpeg$|\.gif$' | xargs -I{} git reset HEAD {}
 
       - name: Commit changes
         run: |
           git add .
           git commit -m "Exclude images from PR preview" || echo "No changes to commit"
-          git push origin HEAD:${{ github.head_ref }}
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
