@@ -16,7 +16,7 @@ jobs:
       # Exclude PNG files from code review
       - name: Exclude PNG files from code review
         run: |
-          find /node_modules -name '*.png' -exec git rm --cached {} +
+          find ./node_modules -name '*.png' -exec git rm --cached {} +
           
 
       # Configure Git user
