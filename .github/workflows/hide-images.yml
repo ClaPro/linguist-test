@@ -1,0 +1,25 @@
+name: Hide PNG from Code Review
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  hide-png-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Pull latest changes
+        run: git pull origin master
+
+      - name: Exclude PNG files from code review
+        run: |
+          find . -name '*.png' -exec git rm --cached {} +
+          git commit -am "Exclude PNG files from code review" || echo "No changes to commit"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}

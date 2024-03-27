@@ -1,4 +1,1 @@
-node_modules/* linguist-vendored
-cordova/* linguist-vendored
-Godeps/_workspace/* linguist-vendored
-
+*.png diff=binary
