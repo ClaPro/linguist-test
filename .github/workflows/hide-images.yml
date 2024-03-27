@@ -19,16 +19,6 @@ jobs:
           git config user.name "${PR_AUTHOR_NAME}"
           git config user.email "${PR_AUTHOR_EMAIL}"
 
-      # Fetch latest changes from the remote repository
-      - name: Fetch latest changes
-        run: git fetch origin ${{ github.base_ref }}:${{ github.base_ref }}
-
-      # Rebase local changes on top of the remote branch
-      - name: Rebase local changes
-        run: |
-          git checkout -B ${{ github.head_ref }} origin/${{ github.base_ref }}
-          git rebase origin/${{ github.base_ref }}
-
       # Exclude PNG files from code review
       - name: Exclude PNG files from code review
         run: |
@@ -40,24 +30,8 @@ jobs:
           git add .
           git commit -m "Exclude PNG files from code review" || echo "No changes to commit"
 
-      # Check if the branch exists and create it if necessary
-      - name: Create branch if it doesn't exist
-        run: |
-          git fetch origin ${{ github.head_ref }} || git checkout -b ${{ github.head_ref }} origin/${{ github.base_ref }}
-
-      # Rebase again to handle any changes pulled from remote
-      - name: Rebase after creating branch
-        run: |
-          git checkout ${{ github.head_ref }}
-          git rebase origin/${{ github.base_ref }}
-
-      # Pull latest changes from the remote branch before pushing
-      - name: Pull latest changes before push
-        run: git pull --rebase origin ${{ github.head_ref }}
-
       # Push changes back to the pull request branch
       - name: Push changes
         uses: ad-m/github-push-action@v0.6.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.head_ref }}
