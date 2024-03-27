@@ -11,6 +11,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      # Set Git user identity using pull request author's information
       - name: Set Git user identity
         run: |
           PR_AUTHOR_NAME=$(curl -s "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" | jq -r '.user.login')
@@ -18,18 +19,18 @@ jobs:
           git config user.name "${PR_AUTHOR_NAME}"
           git config user.email "${PR_AUTHOR_EMAIL}"
 
-      - name: Pull latest changes
-        run: git pull --rebase origin master
-
+      # Remove PNG files from the Git index
       - name: Exclude PNG files from code review
         run: |
-          if [[ $(git ls-files '*.png') ]]; then
-            find . -name '*.png' -exec git rm --cached {} +
-            git commit -am "Exclude PNG files from code review" || echo "No changes to commit"
-          else
-            echo "No PNG files to exclude"
-          fi
+          find . -name '*.png' -exec git rm --cached {} +
 
+      # Commit changes with appropriate message
+      - name: Commit changes
+        run: |
+          git add .
+          git commit -m "Exclude PNG files from code review" || echo "No changes to commit"
+
+      # Push changes back to the pull request branch
       - name: Push changes
         uses: ad-m/github-push-action@v0.6.0
         with:
