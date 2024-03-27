@@ -1,4 +1,4 @@
-*.png binary --diff --merge
+node_modules/*.png linguist-vendored
 node_modules/* linguist-vendored
 cordova/* linguist-vendored
 Godeps/_workspace/* linguist-vendored
