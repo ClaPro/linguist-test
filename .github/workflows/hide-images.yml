@@ -26,7 +26,7 @@ jobs:
       # Rebase local changes on top of the remote branch
       - name: Rebase local changes
         run: |
-          git checkout ${{ github.head_ref }}
+          git checkout -b ${{ github.event.pull_request.head.ref }} origin/${{ github.base_ref }}
           git rebase origin/${{ github.base_ref }}
 
       # Exclude PNG files from code review
@@ -45,4 +45,4 @@ jobs:
         uses: ad-m/github-push-action@v0.6.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.head_ref }}
+          branch: ${{ github.event.pull_request.head.ref }}
