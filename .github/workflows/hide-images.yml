@@ -8,16 +8,10 @@ jobs:
   hide-png-files:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout pull request branch
         uses: actions/checkout@v2
-
-      # Set Git user identity using pull request author's information
-      - name: Set Git user identity
-        run: |
-          PR_AUTHOR_NAME=$(curl -s "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" | jq -r '.user.login')
-          PR_AUTHOR_EMAIL=$(curl -s "https://api.github.com/users/${PR_AUTHOR_NAME}" | jq -r '.email')
-          git config user.name "${PR_AUTHOR_NAME}"
-          git config user.email "${PR_AUTHOR_EMAIL}"
+        with:
+          ref: ${{ github.head_ref }}
 
       # Exclude PNG files from code review
       - name: Exclude PNG files from code review
@@ -35,3 +29,4 @@ jobs:
         uses: ad-m/github-push-action@v0.6.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.head_ref }}
