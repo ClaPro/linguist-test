@@ -11,6 +11,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      # Set Git user identity using pull request author's information
       - name: Set Git user identity
         run: |
           PR_AUTHOR_NAME=$(curl -s "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" | jq -r '.user.login')
@@ -18,22 +19,26 @@ jobs:
           git config user.name "${PR_AUTHOR_NAME}"
           git config user.email "${PR_AUTHOR_EMAIL}"
 
-      # Pull latest changes from the remote repository
-      - name: Pull latest changes
-        run: git pull origin master
+      # Fetch latest changes from the remote repository
+      - name: Fetch latest changes
+        run: git fetch origin master
+
+      # Rebase local changes on top of the remote branch
+      - name: Rebase local changes
+        run: git rebase origin/master
 
       # Exclude PNG files from code review
       - name: Exclude PNG files from code review
         run: |
           find . -name '*.png' -exec git rm --cached {} +
 
-      # Commit changes
+      # Commit changes with appropriate message
       - name: Commit changes
         run: |
           git add .
           git commit -m "Exclude PNG files from code review" || echo "No changes to commit"
 
-      # Push changes
+      # Push changes back to the pull request branch
       - name: Push changes
         uses: ad-m/github-push-action@v0.6.0
         with:
