@@ -11,6 +11,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Pull latest changes
+        run: git pull origin master
+
       - name: Exclude PNG files from code review
         run: |
           find . -name '*.png' -exec git rm --cached {} +
