@@ -53,7 +53,7 @@ jobs:
 
       # Pull latest changes from the remote branch before pushing
       - name: Pull latest changes before push
-        run: git pull origin ${{ github.head_ref }}
+        run: git pull --rebase origin ${{ github.head_ref }}
 
       # Push changes back to the pull request branch
       - name: Push changes
