@@ -10,15 +10,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.pull_request.head.sha }} # Checkout the head SHA of the pull request
+
+      - name: Get base and head SHAs
+        id: get-shas
+        run: |
+          BASE_SHA=$(git merge-base ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }})
+          echo "::set-output name=base_sha::$BASE_SHA"
+          echo "::set-output name=head_sha::${{ github.event.pull_request.head.sha }}"
 
       - name: Exclude images from diff
         run: |
           git config user.name "GitHub Actions"
           git config user.email "<>"
-          BEFORE_SHA=$(git merge-base ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }}) # Get the base commit SHA of the pull request
-          git diff --name-only $BEFORE_SHA ${{ github.event.pull_request.head.sha }} | grep -E '\.png$|\.jpg$|\.jpeg$|\.gif$' | xargs -I{} git reset HEAD {}
+          BEFORE_SHA=${{ steps.get-shas.outputs.base_sha }}
+          HEAD_SHA=${{ steps.get-shas.outputs.head_sha }}
+          git diff --name-only $BEFORE_SHA $HEAD_SHA | grep -E '\.png$|\.jpg$|\.jpeg$|\.gif$' | xargs -I{} git reset HEAD {}
 
       - name: Commit changes
         run: |
