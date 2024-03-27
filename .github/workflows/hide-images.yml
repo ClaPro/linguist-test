@@ -13,16 +13,10 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
-      # Exclude PNG files from code review within a specific path
+      # Exclude PNG files from code review
       - name: Exclude PNG files from code review
         run: |
-          find /node_modules/** -name '*.png' -exec git rm --cached {} +
-
-      # Configure Git user
-      - name: Set Git user
-        run: |
-          git config --global user.email "${{ github.event.pull_request.user.email }}"
-          git config --global user.name "${{ github.event.pull_request.user.login }}"
+          find /node_modules -name '*.png' -exec git rm --cached {} +
 
       # Commit changes with appropriate message
       - name: Commit changes
