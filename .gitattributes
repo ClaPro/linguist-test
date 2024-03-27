@@ -1,2 +1,1 @@
-*.png diff=unified
-
+*.png diff=binary
