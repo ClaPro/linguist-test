@@ -11,6 +11,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      # Pull latest changes from the remote repository
+      - name: Pull latest changes
+        run: git pull origin ${{ github.head_ref }}
+
       # Set Git user identity using pull request author's information
       - name: Set Git user identity
         run: |
@@ -18,14 +22,6 @@ jobs:
           PR_AUTHOR_EMAIL=$(curl -s "https://api.github.com/users/${PR_AUTHOR_NAME}" | jq -r '.email')
           git config user.name "${PR_AUTHOR_NAME}"
           git config user.email "${PR_AUTHOR_EMAIL}"
-
-      # Fetch latest changes from the remote repository
-      - name: Fetch latest changes
-        run: git fetch origin master
-
-      # Rebase local changes on top of the remote branch
-      - name: Rebase local changes
-        run: git rebase origin/master
 
       # Exclude PNG files from code review
       - name: Exclude PNG files from code review
